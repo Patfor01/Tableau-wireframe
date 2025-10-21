@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Dashboard Prototype</title>
+    <style>
+        /* Base Styles */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
+        #dashboard-container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+        
+        /* Header & Filter Section */
+        #header-area { background-color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        #header-area h1 { font-size: 24px; color: #333; margin: 0; }
+        .filter-placeholder { padding: 8px 15px; border: 1px solid #ccc; border-radius: 4px; background-color: #f9f9f9; color: #555; font-size: 14px; }
+
+        /* KPI Cards Section */
+        #kpi-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 equal columns for 4 KPIs */
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #007ACC; /* Accent color for visual appeal */
+            transition: transform 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+
+        .kpi-title {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .kpi-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #007ACC;
+        }
+
+        .kpi-trend {
+            font-size: 14px;
+            color: #28a745; /* Green for positive trend */
+            margin-top: 5px;
+        }
+        
+        /* Main Content Section */
+        #main-charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Two columns: 2/3 for main chart, 1/3 for sidebar chart */
+            gap: 20px;
+        }
+
+        .chart-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .chart-placeholder {
+            height: 400px;
+            background-color: #e6f7ff; /* Light blue background for Tableau embed area */
+            border: 1px dashed #007ACC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #007ACC;
+        }
+
+        /* Color variations for KPI accents */
+        #card-revenue { border-left-color: #4CAF50; } /* Green */
+        #card-orders { border-left-color: #FFC107; } /* Yellow */
+        #card-profit { border-left-color: #2196F3; } /* Blue */
+        #card-aov { border-left-color: #E91E63; } /* Pink */
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            #kpi-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            #main-charts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="dashboard-container">
+
+        <div id="header-area">
+            <h1>Executive Sales Summary Dashboard</h1>
+            <div class="filter-placeholder">
+                [Tableau Filter Embed: Date Range]
+            </div>
+            <div class="filter-placeholder">
+                [Tableau Filter Embed: Region/Segment]
+            </div>
+        </div>
+        
+        <div id="kpi-cards-grid">
+            
+            <div class="kpi-card" id="card-revenue">
+                <div class="kpi-title">Revenue</div>
+                <div class="kpi-value">$1.25M</div>
+                <div class="kpi-trend">▲ 12.5% vs Last Month</div>
+                <p style="font-size: 10px; color: #999;">[Tableau Embed: Sparkline/Indicator]</p>
+            </div>
+
+            <div class="kpi-card" id="card-orders">
+                <div class="kpi-title">Total Orders</div>
+                <div class="kpi-value">8,520</div>
+                <div class="kpi-trend">▼ 2.1% vs Last Month</div>
+                <p style="font-size: 10px; color: #999; color: #dc3545 !important;">[Tableau Embed: Sparkline/Indicator]</p>
+            </div>
+
+            <div class="kpi-card" id="card-profit">
+                <div class="kpi-title">Profit</div>
+                <div class="kpi-value">$320K</div>
+                <div class="kpi-trend">▲ 18.0% vs Last Month</div>
+                <p style="font-size: 10px; color: #999;">[Tableau Embed: Sparkline/Indicator]</p>
+            </div>
+
+            <div class="kpi-card" id="card-aov">
+                <div class="kpi-title">Avg. Order Value (AOV)</div>
+                <div class="kpi-value">$146.75</div>
+                <div class="kpi-trend">▲ 5.3% vs Last Month</div>
+                <p style="font-size: 10px; color: #999;">[Tableau Embed: Sparkline/Indicator]</p>
+            </div>
+
+        </div>
+
+        <div id="main-charts">
+            
+            <div class="chart-panel">
+                <h2 style="font-size: 20px; color: #333; margin-top: 0;">Revenue Trend by Month</h2>
+                <div class="chart-placeholder">
+                    [Tableau Embed: Main Line Chart or Area Chart]
+                </div>
+            </div>
+
+            <div class="chart-panel">
+                <h2 style="font-size: 20px; color: #333; margin-top: 0;">Orders by Product Category</h2>
+                <div class="chart-placeholder">
+                    [Tableau Embed: Bar Chart or Donut Chart]
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+
+</body>
+</html>

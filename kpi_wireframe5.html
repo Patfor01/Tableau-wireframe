@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shingles Scorecard Wireframe (Final)</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            font-size: 11px; /* Smaller base font size for density */
+        }
+
+        /* ----------------------------------- */
+        /* 1. Main Dashboard Flex Layout */
+        /* ----------------------------------- */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* ----------------------------------- */
+        /* 2. Header and Filter Bar */
+        /* ----------------------------------- */
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .dashboard-title {
+            font-size: 1.6em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 5px 0;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .filter-group select {
+            padding: 3px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 11px;
+            min-width: 90px;
+        }
+        
+        /* ----------------------------------- */
+        /* 3. KPI Header Row */
+        /* ----------------------------------- */
+        .kpi-header {
+            display: flex;
+            justify-content: flex-start;
+            gap: 15px;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .kpi-card {
+            padding: 3px 8px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+            line-height: 1.2;
+            font-size: 10px;
+        }
+
+        .kpi-card-value {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        /* ----------------------------------- */
+        /* 4. Main Data Grid */
+        /* ----------------------------------- */
+        .main-scorecard {
+            overflow-x: auto;
+            border: 1px solid #ccc;
+        }
+
+        .scorecard-grid {
+            display: grid;
+            /* Column Definitions (Removed Metric 19-23) */
+            grid-template-columns: 140px /* Plant Name */
+                                   50px /* Units */
+                                   50px /* Pacing (Sq) */
+                                   60px /* Path to Plan */
+                                   60px /* Btr / Wrse */
+                                   65px /* MM Sq MTD */
+                                   85px /* YTD Trend (Wider for sparkline + value) */
+                                   85px /* End Inv Trend (Wider for sparkline + value) */
+                                   65px /* NAH % */
+                                   65px /* OUI % */
+                                   65px /* Avg Sq/Day */
+                                   65px /* Prod Rate */
+                                   65px /* CPV YTD */
+                                   65px /* YTD Prod vs LE */
+                                   65px /* YTD Fill */
+                                   65px /* Quality % */
+                                   65px /* IRR */
+                                   65px; /* Safety */
+            min-width: 1700px; /* Adjusted minimum width */
+            border-collapse: collapse;
+        }
+
+        /* Styling for all cells */
+        .grid-header, .grid-cell {
+            padding: 3px;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+        .grid-header {
+            font-weight: bold;
+            background-color: #e9e9e9;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .plant-name { 
+            text-align: left;
+            background-color: #f7f7f7; 
+            font-weight: bold;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            border-right: 1px solid #ccc;
+        }
+        .grid-header.plant-name { z-index: 15; }
+
+        /* Color classes for KPI status */
+        .variance-good { color: #5cb85c; }
+        .variance-bad { color: #d9534f; }
+        
+        /* Sparkline Specific Styles */
+        .trend-cell {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%; /* Fill the cell height */
+            padding: 2px 0;
+        }
+        .sparkline-placeholder {
+            width: 90%;
+            height: 12px;
+            background: repeating-linear-gradient(
+                45deg,
+                #ccc,
+                #ccc 2px,
+                #f0f0f0 2px,
+                #f0f0f0 4px
+            ); /* Simple pattern placeholder */
+            border-radius: 1px;
+            margin-bottom: 2px;
+        }
+        .trend-value {
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        /* Bolding the ALL row and making it distinct */
+        .summary-row .grid-cell { 
+            background-color: #d8edf7 !important; 
+            font-weight: bold; /* Make font bold across the row */
+            border-top: 2px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <div class="header-section">
+        <div class="dashboard-title">Shingles Scorecard July 2025</div>
+        
+        <div class="filter-bar">
+            <div class="filter-group"><label for="plant-filter">Plant</label><select id="plant-filter"><option value="all">All</option><option>1820 - Baltimore</option><option>...</option></select></div>
+            <div class="filter-group"><label for="department-filter">Department</label><select id="department-filter"><option value="all">All</option><option>Production</option></select></div>
+            <div class="filter-group"><label for="shift-filter">Shift</label><select id="shift-filter"><option value="all">All</option><option>A Shift</option></select></div>
+            <div class="filter-group"><label for="fiscal-month-filter">Fiscal Month</label><select id="fiscal-month-filter"><option>July 2025</option></select></div>
+            <div class="filter-group"><label for="fiscal-date-filter">Fiscal Date</label><select id="fiscal-date-filter"><option>2025-10-20</option></select></div>
+            <div class="filter-group"><label for="product-filter">Product</label><select id="product-filter"><option>All</option></select></div>
+        </div>
+    </div>
+    
+    <div class="kpi-header">
+        <div class="kpi-card"><div>Production on Original Plan</div><div class="kpi-card-value variance-bad">(0.20)</div></div>
+        <div class="kpi-card"><div>Production on Latest Estimate</div><div class="kpi-card-value variance-bad">(0.21)</div></div>
+        <div class="kpi-card"><div>End Inventory</div><div class="kpi-card-value variance-bad">(1.65)</div></div>
+        <div class="kpi-card"><div>NAH %</div><div class="kpi-card-value variance-good">0.79</div></div>
+        <div class="kpi-card"><div>Uptime</div><div class="kpi-card-value variance-bad">(0.971)</div></div>
+    </div>
+
+    <div class="main-scorecard">
+        <div class="scorecard-grid">
+            
+            <div class="grid-header plant-name">Plant (MM)</div>
+            <div class="grid-header">Units</div>
+            <div class="grid-header">Pacing (Sq)</div>
+            <div class="grid-header variance-good">Path to Plan</div>
+            <div class="grid-header variance-bad">Btr / Wrse</div>
+            <div class="grid-header">MM Sq MTD</div>
+            <div class="grid-header">YTD Trend</div>
+            <div class="grid-header">End Inv Trend</div>
+            <div class="grid-header">NAH %</div>
+            <div class="grid-header">OUI %</div>
+            <div class="grid-header">Avg Sq/Day</div>
+            <div class="grid-header">Prod Rate</div>
+            <div class="grid-header">CPV YTD</div>
+            <div class="grid-header variance-bad">YTD Prod vs LE</div>
+            <div class="grid-header">YTD Fill</div>
+            <div class="grid-header">Quality %</div>
+            <div class="grid-header">IRR</div>
+            <div class="grid-header">Safety</div>
+            
+            <div class="grid-cell plant-name">1820 - Baltimore</div>
+            <div class="grid-cell">0.19</div><div class="grid-cell">0.45</div><div class="grid-cell variance-good">0.05</div><div class="grid-cell variance-bad">(0.03)</div><div class="grid-cell">1.2</div>
+            <div class="grid-cell trend-cell"><div class="sparkline-placeholder"></div><div class="trend-value variance-good">+0.25</div></div>
+            <div class="grid-cell trend-cell"><div class="sparkline-placeholder"></div><div class="trend-value variance-bad">-0.11</div></div>
+            <div class="grid-cell variance-good">85.2%</div><div class="grid-cell variance-bad">11.4%</div><div class="grid-cell">4.3</div><div class="grid-cell">605</div><div class="grid-cell variance-bad">$39.88</div><div class="grid-cell variance-bad">(0.04)</div><div class="grid-cell">2.8</div><div class="grid-cell variance-good">99.4</div><div class="grid-cell">27</div><div class="grid-cell variance-good">3.80</div>
+            
+            <div class="grid-cell plant-name">1840 - Dallas</div>
+            <div class="grid-cell">0.19</div><div class="grid-cell">0.04</div><div class="grid-cell variance-bad">0.32</div><div class="grid-cell variance-bad">(0.02)</div><div class="grid-cell">2.1</div>
+            <div class="grid-cell trend-cell"><div class="sparkline-placeholder"></div><div class="trend-value variance-bad">-0.05</div></div>
+            <div class="grid-cell trend-cell"><div class="sparkline-placeholder"></div><div class="trend-value variance-good">+0.09</div></div>
+            <div class="grid-cell variance-bad">62.3%</div><div class="grid-cell variance-bad">11.9%</div><div class="grid-cell">9.1</div><div class="grid-cell">609</div><div class="grid-cell variance-good">$33.88</div><div class="grid-cell variance-bad">(0.02)</div><div class="grid-cell">2.1</div><div class="grid-cell variance-good">99.7</div><div class="grid-cell">81</div><div class="grid-cell variance-bad">1.64</div>
+            
+            <div class="grid-cell plant-name">2109 - Fontana</div>
+            <div class="grid-cell">0.08</div><div class="grid-cell">0.12</div><div class="grid-cell variance-good">0.09</div><div class="grid-cell variance-good">0.03</div><div class="grid-cell">...</div>
+            <div class="grid-cell trend-cell"><div class="sparkline-placeholder"></div><div class="trend-value variance-good">+0.15</div></div>
+            <div class="grid-cell trend-cell"><div class="sparkline-placeholder"></div><div class="trend-value variance-good">+0.02</div></div>
+            <div class="grid-cell variance-good">69.8%</div><div class="grid-cell variance-bad">37.2%</div><div class="grid-cell">4.3</div><div class="grid-cell">...</div><div class="grid-cell variance-good">$24.76</div><div class="grid-cell variance-good">...</div><div class="grid-cell variance-good">...</div><div class="grid-cell variance-bad">99.9</div><div class="grid-cell">72</div><div class="grid-cell variance-good">1.72</div>
+
+            <div class="grid-cell plant-name summary-row">(ALL)</div>
+            <div class="grid-cell summary-row">2.55</div>
+            <div class="grid-cell summary-row">3.54</div>
+            <div class="grid-cell variance-bad summary-row">(0.20)</div>
+            <div class="grid-cell variance-bad summary-row">(0.21)</div>
+            <div class="grid-cell summary-row">3.79</div>
+            <div class="grid-cell trend-cell summary-row"><div class="sparkline-placeholder"></div><div class="trend-value variance-bad">-0.07</div></div>
+            <div class="grid-cell trend-cell summary-row"><div class="sparkline-placeholder"></div><div class="trend-value variance-good">+0.18</div></div>
+            <div class="grid-cell variance-bad summary-row">42.8%</div>
+            <div class="grid-cell variance-bad summary-row">12.7%</div>
+            <div class="grid-cell summary-row">11.0</div>
+            <div class="grid-cell summary-row">651</div>
+            <div class="grid-cell variance-bad summary-row">$7.65</div>
+            <div class="grid-cell variance-bad summary-row">(0.21)</div>
+            <div class="grid-cell summary-row">27.2</div>
+            <div class="grid-cell variance-good summary-row">98.5</div>
+            <div class="grid-cell summary-row">...</div>
+            <div class="grid-cell summary-row">1.85</div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

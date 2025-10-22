@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Technology Dashboard</title>
+    <style>
+        /* Replicating the provided CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 980px; 
+            margin: auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .dashboard-title {
+            padding: 20px 15px;
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            background-color: #e0e7ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap; /* Allows filters to wrap if space is tight */
+        }
+        .filters label {
+            font-weight: normal;
+            margin-right: 5px;
+        }
+        .filters select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .main-content {
+            display: flex;
+            padding: 20px;
+        }
+        .sidebar {
+            width: 100px; 
+            text-align: center;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            background-color: #f0f5f8;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #003366;
+            text-orientation: mixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            gap: 20px;
+            flex-direction: column; /* Changed for single column layout of metrics */
+        }
+        .results-section {
+            flex: none;
+        }
+        .section-header {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px;
+        }
+        .grid-header {
+            grid-column: span 3;
+            background-color: #0056b3;
+            color: white;
+            padding: 8px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 5px;
+            margin-bottom: -7px; /* Reduce space before grid items */
+        }
+        .grid-item {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 10px;
+            text-align: center;
+            min-height: 80px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .kpi-content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .kpi-text-group {
+            text-align: left;
+            flex-grow: 1;
+            padding-left: 5px;
+        }
+        .grid-item-label {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 2px;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+        }
+        .grid-item-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 0px;
+        }
+        .grid-item-change {
+            font-size: 10px;
+            color: #555; /* Default color */
+            margin-top: -2px;
+        }
+
+        /* NEW Indicator Styles (Green/Red Dot/Circle) */
+        .indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+        .indicator.green {
+            background-color: #4CAF50; /* Green (Positive Trend/Good) */
+        }
+        .indicator.red {
+            background-color: #f44336; /* Red (Negative Trend/Bad) */
+        }
+
+        .footer {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            Information Technology Summary
+        </header>
+
+        <div class="dashboard-title">
+            <span>Information Technology Dashboard</span>
+            <div class="filters">
+                <label for="quarter-filter">Quarter:</label>
+                <select id="quarter-filter">
+                    <option value="Q3">Q3 2025</option>
+                    <option value="Q2">Q2 2025</option>
+                </select>
+                <label for="product-filter">System:</label>
+                <select id="product-filter">
+                    <option value="All">All Systems</option>
+                    <option value="A">ERP</option>
+                </select>
+                <label for="business-area-filter">Business Unit:</label>
+                <select id="business-area-filter">
+                    <option value="All">All Units</option>
+                    <option value="Power">Finance</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">IT SUMMARY METRICS</div>
+            <div class="content-area">
+                <div class="results-section">
+                    <div class="section-header">Key IT Metrics</div>
+                    
+                    <div class="kpi-grid">
+                        
+                        <div class="grid-header">☁️ Infrastructure Metrics</div>
+                        
+                        <div class="grid-item">
+                            <div class="grid-item-label">Availability of Systems</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">99.9%</div>
+                                    <div class="grid-item-change">Target: 99.95% (Below Target)</div>
+                                </div>
+                                <div class="indicator red"></div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Network Availability</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">99.99%</div>
+                                    <div class="grid-item-change">Target: 99.99% (On Target)</div>
+                                </div>
+                                <div class="indicator green"></div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Incident SLA</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">90% Met</div>
+                                    <div class="grid-item-change">Target: 95% (Below Target)</div>
+                                </div>
+                                <div class="indicator red"></div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">IT Support Metrics (Tickets Closed)</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">1,500</div>
+                                    <div class="grid-item-change">vs. 1,450 Prior Mth (Improved)</div>
+                                </div>
+                                <div class="indicator green"></div>
+                            </div>
+                        </div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+
+                        <div class="grid-header">🔒 Cyber Security Metrics</div>
+                        
+                        <div class="grid-item">
+                            <div class="grid-item-label">Cyber Security Score</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">85%</div>
+                                    <div class="grid-item-change">Target: > 80% (Good)</div>
+                                </div>
+                                <div class="indicator green"></div>
+                            </div>
+                        </div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+
+                        <div class="grid-header">📊 PMO Metric</div>
+                        
+                        <div class="grid-item">
+                            <div class="grid-item-label">Project Managment (Completed vs Planned)</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">8/10</div>
+                                    <div class="grid-item-change">Projects Completed (80%)</div>
+                                </div>
+                                <div class="indicator red"></div>
+                            </div>
+                        </div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                        <div class="grid-item" style="visibility: hidden; display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            Information Technology Metrics as of Q3 2025
+        </footer>
+    </div>
+</body>
+</html>

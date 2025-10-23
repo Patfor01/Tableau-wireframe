@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FY2025 Q3 Financial Results - Dashboard</title>
+    <style>
+        /* General styling and responsiveness */
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            /* WIDER: Changed fixed width to max-width: 1200px and responsive width: 90% */
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px; /* Added rounded corners for modern look */
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            font-size: 28px; /* Slightly larger title */
+            font-weight: 700;
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .dashboard-title {
+            padding: 15px 25px; /* Reduced vertical padding slightly to shorten length */
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            background-color: #eaf0f4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .filters {
+            display: flex;
+            gap: 20px;
+        }
+        .filters label {
+            font-weight: normal;
+            margin-right: 5px;
+            color: #444;
+        }
+        .filters select {
+            padding: 5px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .filters select:focus {
+            outline: none;
+            border-color: #0056b3;
+        }
+
+        /* Content Layout */
+        .main-content {
+            display: flex;
+            padding: 20px 25px;
+            gap: 30px; /* Increased gap for better separation */
+        }
+        .sidebar {
+            /* Adjusted width to be thinner */
+            width: 50px;
+            min-width: 50px;
+            text-align: center;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            background-color: #f0f5f8;
+            padding: 15px 0;
+            font-weight: 700;
+            font-size: 14px;
+            color: #003366;
+            text-orientation: mixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 0;
+            border-radius: 6px;
+        }
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            gap: 25px; /* Increased content area gap */
+        }
+        .results-section, .highlights-section {
+            flex: 1;
+        }
+
+        /* Section Styling */
+        .section-header {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        
+        /* KPI Grid Styling (for Financial Results) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px; /* Reduced gap to shorten vertical length */
+        }
+        .grid-header {
+            grid-column: span 3;
+            background-color: #0056b3;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px; /* Slightly smaller font */
+            font-weight: bold;
+            margin-top: 5px;
+            border-radius: 4px;
+        }
+        .grid-item {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 10px;
+            text-align: center;
+            min-height: 70px; /* Reduced min-height to shorten vertical length */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            transition: transform 0.2s;
+        }
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .kpi-content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .kpi-text-group {
+            text-align: left;
+            flex-grow: 1;
+            padding-left: 5px;
+        }
+        .grid-item-label {
+            font-size: 12px; /* Reduced label font size */
+            color: #555;
+            margin-bottom: 2px;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+            text-transform: uppercase;
+        }
+        .grid-item-value {
+            font-size: 18px; /* Reduced value font size */
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 0px;
+        }
+        .grid-item-change {
+            font-size: 10px;
+            color: #28a745; /* Success color for positive change */
+            margin-top: 0px;
+        }
+
+        /* Trendline Styles (Mini Bar Chart) */
+        .trendline {
+            display: flex;
+            height: 25px; /* Reduced trendline height */
+            width: 35px; /* Reduced trendline width */
+            align-items: flex-end;
+            justify-content: space-between;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+            padding-right: 5px;
+        }
+        .trendline-bar {
+            width: 7px;
+            background-color: #008080;
+            border-radius: 1px;
+            margin: 0 1px;
+        }
+        /* Specific Bar Heights to simulate trend (Adjusted for new height) */
+        .tl-h-25 { height: 6px; }
+        .tl-h-50 { height: 12px; }
+        .tl-h-75 { height: 18px; }
+        .tl-h-100 { height: 25px; }
+
+
+        /* Business Highlights Styling */
+        .business-highlights-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px; /* Reduced gap to shorten vertical length */
+        }
+        .highlight-item {
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 10px;
+            min-height: 50px; /* Reduced min-height to shorten vertical length */
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .highlight-icon {
+            width: 30px; /* Reduced icon size */
+            height: 30px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            color: #e67e22; /* Icon color */
+        }
+
+        .highlight-item-text {
+            flex-grow: 1;
+            font-size: 13px; /* Reduced font size */
+            color: #333;
+        }
+        .footer {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px; /* Reduced font size */
+            margin-top: 20px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- REMOVED: Specific title text from the header -->
+        <header>
+            Financial Dashboard
+        </header>
+
+        <div class="dashboard-title">
+            <span>Dashboard Overview</span>
+            <div class="filters">
+                <label for="quarter-filter">Quarter:</label>
+                <select id="quarter-filter">
+                    <option value="Q3">Q3 2025</option>
+                    <option value="Q2">Q2 2025</option>
+                    <option value="Q1">Q1 2025</option>
+                    <option value="FY24">FY 2024</option>
+                </select>
+                <label for="business-unit-filter">Business Unit:</label>
+                <select id="business-unit-filter">
+                    <option value="All">All Business Units</option>
+                    <option value="Power">Power Solutions</option>
+                    <option value="EV">EV Solutions</option>
+                    <option value="Parts">Parts & Service</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">QUARTERLY HIGHLIGHTS</div>
+            <div class="content-area">
+                <div class="results-section">
+                    <div class="section-header">FY2025 Q3 Results</div>
+
+                    <div class="kpi-grid">
+
+                        <div class="grid-header">📈 Sales KPIs</div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">UNITS SOLD</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">2,467</div>
+                                    <div class="grid-item-change">+316 vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">NET SALES</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$398M</div>
+                                    <div class="grid-item-change">+$65M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Market Share %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">18.5%</div>
+                                    <div class="grid-item-change">+1.2 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-header">💰 Finance KPIs</div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Adjusted EBITDA</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$58M</div>
+                                    <div class="grid-item-change">+$10M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Adjusted FCF</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$52M</div>
+                                    <div class="grid-item-change">+$56M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">FCF Conversion %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">91%</div>
+                                    <div class="grid-item-change">+45 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- REMOVED: Remaining KPI grid items to shorten the report length -->
+                    </div>
+                </div>
+
+                <div class="highlights-section">
+                    <div class="section-header">Key Business Highlights</div>
+                    <div class="business-highlights-grid">
+                        <div class="highlight-item">
+                            <div class="highlight-icon">💡</div>
+                            <div class="highlight-item-text">
+                                **Innovation:** Launched Beta Product X to critical acclaim, securing 5 new enterprise pre-orders in the quarter.
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">🤝</div>
+                            <div class="highlight-item-text">
+                                **M\&A:** Successfully completed the acquisition of Technology Firm Z, immediately integrating 45 key engineering staff.
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">⚙️</div>
+                            <div class="highlight-item-text">
+                                **Operations:** Achieved 12% supply chain optimization via new logistics partnership, leading to a 3% reduction in COGS.
+                            </div>
+                        </div>
+                        <!-- REMOVED: Remaining highlight items to shorten the report length -->
+                    </div>
+                </div>
+            </div>
+            <!-- Removed the redundant right sidebar for cleaner layout -->
+        </div>
+
+        <div class="footer">
+            Financial Data Summary | Q3 2025 | Confidential & Proprietary
+        </div>
+    </div>
+</body>
+</html>

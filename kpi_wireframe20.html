@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive View Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            /* WIDENED: Increased width from 980px to 1100px */
+            width: 1100px; 
+            margin: auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        /* The original header CSS block has been removed as per request */
+        .dashboard-title {
+            /* SHRUNK: Reduced vertical padding from 20px to 15px */
+            padding: 15px 15px; 
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            background-color: #e0e7ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+        }
+        .filters label {
+            font-weight: normal;
+            margin-right: 5px;
+        }
+        .filters select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .main-content {
+            display: flex;
+            /* SHRUNK: Reduced vertical padding from 20px to 15px */
+            padding: 15px 20px;
+        }
+        .sidebar {
+            /* Changed width from 100px to 50px to make it narrower */
+            width: 50px; 
+            text-align: center;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            background-color: #f0f5f8;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #003366;
+            text-orientation: mixed;
+            flex-shrink: 0;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar.right {
+            margin-left: 20px;
+            margin-right: 0;
+        }
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            gap: 20px;
+        }
+        .results-section, .highlights-section {
+            flex: 1;
+        }
+        .section-header {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px;
+        }
+        /* .grid-header CSS removed as the elements are removed */
+        .grid-item {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 10px;
+            text-align: center;
+            /* SHRUNK: Reduced min-height from 70px to 60px */
+            min-height: 60px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .kpi-content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .kpi-text-group {
+            text-align: left;
+            flex-grow: 1;
+            padding-left: 5px;
+        }
+        .grid-item-label {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 2px;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+        }
+        .grid-item-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 0px;
+        }
+        .grid-item-change {
+            font-size: 10px;
+            color: #4CAF50;
+            margin-top: -2px;
+        }
+
+        /* NEW Trendline Styles */
+        .trendline {
+            display: flex;
+            height: 30px; /* Height for the "chart" area */
+            width: 40px; /* Width for the "chart" area */
+            align-items: flex-end; /* Align bars to the bottom */
+            justify-content: space-between;
+            overflow: hidden; /* Hide anything outside the bounds */
+            position: relative;
+            flex-shrink: 0;
+            padding-right: 5px;
+        }
+        .trendline-bar {
+            width: 8px; /* Width of each bar segment */
+            background-color: #008080; /* Teal/cyan color */
+            border-radius: 1px;
+            margin: 0 1px; /* Small space between bars */
+        }
+        /* Specific Bar Heights to simulate trend */
+        .tl-h-25 { height: 7px; }
+        .tl-h-50 { height: 15px; }
+        .tl-h-75 { height: 22px; }
+        .tl-h-100 { height: 30px; }
+
+
+        .business-highlights-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 15px;
+        }
+        .highlight-item {
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 10px;
+            /* SHRUNK: Reduced min-height from 38px to 30px to match new KPI height */
+            min-height: 30px; 
+        }
+        .highlight-icon {
+            width: 40px; 
+            height: 40px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .highlight-item-text {
+            flex-grow: 1;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #003366;
+            color: white;
+            /* SHRUNK: Reduced padding from 10px to 8px */
+            padding: 8px; 
+            text-align: center;
+            font-size: 14px;
+            /* SHRUNK: Reduced margin-top from 20px to 10px */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Removed the top header bar as requested -->
+
+        <div class="dashboard-title">
+            <!-- Renamed "Dashboard Overview" to "Executive View" -->
+            <span>Executive View</span>
+            <div class="filters">
+                <!-- Modified "Quarter" filter to "Timeframe" with new options -->
+                <label for="timeframe-filter">Timeframe:</label>
+                <select id="timeframe-filter">
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly" selected>Quarterly</option>
+                    <option value="Annually">Annually</option>
+                </select>
+                <!-- Modified "Business Unit" filter to "Business Area" with new options -->
+                <label for="business-area-filter">Business Area:</label>
+                <select id="business-area-filter">
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- The sidebar width is controlled by the CSS change (50px) -->
+            <div class="sidebar">QUARTERLY HIGHLIGHTS</div>
+            <div class="content-area">
+                <div class="results-section">
+                    <div class="section-header">FY2025 Q3 Results</div>
+                    
+                    <div class="kpi-grid">
+                        
+                        <!-- Removed "Sales KPIs" header -->
+                        <div class="grid-item">
+                            <div class="grid-item-label">UNITS SOLD</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">2,467</div>
+                                    <div class="grid-item-change">+316 vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">NET SALES</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$398M</div>
+                                    <div class="grid-item-change">+$65M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Market Share %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">18.5%</div>
+                                    <div class="grid-item-change">+1.2 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Removed "Finance KPIs" header -->
+                        <div class="grid-item">
+                            <div class="grid-item-label">Adjusted EBITDA</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$58M</div>
+                                    <div class="grid-item-change">+$10M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Adjusted FCF</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$52M</div>
+                                    <div class="grid-item-change">+$56M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">FCF Conversion %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">91%</div>
+                                    <div class="grid-item-change">+45 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">OI ($)</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$45M</div>
+                                    <div class="grid-item-change">+$8M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">COGS %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">75%</div>
+                                    <div class="grid-item-change">-2 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- The hidden item was removed to maintain the 3x3 grid layout -->
+
+                        <!-- Removed "Operations KPIs" header -->
+                        <div class="grid-item">
+                            <div class="grid-item-label"># of Safety Infractions</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">3</div>
+                                    <div class="grid-item-change">-1 vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">New Material Claims %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">0.8%</div>
+                                    <div class="grid-item-change">-0.2 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Premium Mix %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">42%</div>
+                                    <div class="grid-item-change">+5 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="highlights-section">
+                    <div class="section-header">BUSINESS HIGHLIGHTS</div>
+                    <div class="business-highlights-grid">
+                        
+                        <div class="highlight-item">
+                            <div class="highlight-icon">💰</div> 
+                            <div class="highlight-item-text">Strong ~$618M Backlog of 3.9K Units¹</div>
+                        </div>
+                        
+                        <div class="highlight-item">
+                            <div class="highlight-icon">📈</div>
+                            <div class="highlight-item-text">Orders pacing/aligning with our monthly forecast within 15% of Target</div>
+                        </div>
+                        
+                        <div class="highlight-item">
+                            <div class="highlight-icon">🔒</div>
+                            <div class="highlight-item-text">Cyber Security Score up by 23%</div>
+                        </div>
+                        
+                        <div class="highlight-item">
+                            <div class="highlight-icon">🏠</div>
+                            <div class="highlight-item-text">Shingle Sales of $26M</div>
+                        </div>
+                        
+                        <div class="highlight-item">
+                            <div class="highlight-icon">✅</div>
+                            <div class="highlight-item-text">Increase of 13% of prompt closure of environmental tasks from previous quarter mitigating the risk of unexpected spills and releases, thereby enhancing the effectiveness of response protocols.</div>
+                        </div>
+                        
+                        <!-- REMOVED: Beat & Raising Guidance -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            Q3 Adj. EBITDA of $58M and 15% Margin
+        </footer>
+    </div>
+</body>
+</html>

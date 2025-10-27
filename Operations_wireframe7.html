@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functional Summary - Residential</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#003366',
+                        'secondary-blue': '#e0e7ed',
+                        'accent-yellow': '#FBBF24',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* REMOVED: Custom styles for sidebar-vertical */
+
+        /* NEW: Style for Chart Containers */
+        .chart-visual-container {
+            height: 280px; 
+            background-color: #f9f9f9;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* General D3 axis styling for visibility */
+        .axis line, .axis path {
+            stroke: #9ca3af;
+        }
+        .axis text {
+            fill: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans p-4 sm:p-6 md:p-10">
+    <div class="container max-w-7xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden">
+        <header class="bg-primary-blue text-white p-4 sm:p-6 text-center">
+            <h1 class="text-3xl font-extrabold">
+                Functional Summary - <span class="text-accent-yellow font-black">Residential</span>
+            </h1>
+        </header>
+
+        <div class="bg-secondary-blue p-4 sm:p-5 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <span class="text-xl font-bold text-gray-800">Residential KPI Dashboard</span>
+            <div class="filters flex flex-wrap gap-4 text-sm">
+                
+                <div class="flex items-center gap-2">
+                    <label for="timeframe-filter" class="font-medium text-gray-700">Timeframe:</label>
+                    <select id="timeframe-filter" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-blue focus:border-primary-blue">
+                        <option value="Quarterly" selected>Quarterly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Annual">Annual</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label for="product-filter" class="font-medium text-gray-700">Product:</label>
+                    <select id="product-filter" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-blue focus:border-primary-blue">
+                        <option value="All">All Products</option>
+                        <option value="A">Product A</option>
+                        <option value="B">Product B</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label for="business-area-filter" class="font-medium text-gray-700">Business Area:</label>
+                    <select id="business-area-filter" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-blue focus:border-primary-blue">
+                        <option value="Residential" selected>Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Industrial">Industrial</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="main-content flex">
+            
+            <div class="content-area flex-grow p-4 md:p-6 space-y-8 w-full"> 
+
+                <div class="results-section">
+                    <div class="bg-primary-blue text-white p-3 text-center font-bold text-lg rounded-t-lg">
+                        Key Operational Metrics
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-3 bg-white rounded-b-lg">
+                        
+                        <div id="kpi-grid" class="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                            
+                            <script>
+                                function renderKpi(label, value, change, indicatorClass, header = false) {
+                                    const grid = document.getElementById('kpi-grid');
+                                    // Adjusted col-span to match the new 4-column layout
+                                    const colSpanClasses = "col-span-2 md:col-span-3 xl:col-span-4"; 
+
+                                    if (header) {
+                                        const headerDiv = document.createElement('div');
+                                        headerDiv.className = `${colSpanClasses} bg-blue-600 text-white p-2 text-sm font-bold rounded mt-2`;
+                                        headerDiv.innerHTML = label;
+                                        grid.appendChild(headerDiv);
+                                    } else {
+                                        const item = document.createElement('div');
+                                        item.className = "bg-white border border-gray-200 rounded-lg p-3 text-center shadow-md flex flex-col justify-center items-center min-h-[90px] transition duration-300 hover:shadow-lg hover:border-blue-300";
+                                        item.innerHTML = `
+                                            <div class="text-xs font-semibold text-gray-600 mb-1">${label}</div>
+                                            <div class="flex items-center justify-between w-full mt-1">
+                                                <div class="text-left flex-grow pl-1">
+                                                    <div class="text-xl font-extrabold text-primary-blue">${value}</div>
+                                                    <div class="text-[10px] text-gray-500 mt-[-2px]">${change}</div>
+                                                </div>
+                                                <div class="w-4 h-4 rounded-full ${indicatorClass} flex-shrink-0 ml-2"></div>
+                                            </div>
+                                        `;
+                                        grid.appendChild(item);
+                                    }
+                                }
+                                
+                                // 🛡️ Safety Metrics
+                                renderKpi('🛡️ Safety Metrics', '', '', '', true);
+                                renderKpi('Recordable Frequency Rate', '0.75', 'Target: 0.80 (Good)', 'bg-green-500');
+                                renderKpi('Serious Injury Rate', '0.00', 'Target: 0.00 (Good)', 'bg-green-500');
+                                renderKpi('Safety Work Order Closure %', '95%', 'vs. 92% PY (Improved)', 'bg-green-500');
+                                
+                                // 🔬 Quality Metrics
+                                renderKpi('🔬 Quality Metrics', '', '', '', true);
+                                renderKpi('New Material Claims %', '0.8%', 'Target: < 1.0% (Good)', 'bg-green-500');
+                                renderKpi('Defective Mfg PPM', '150', 'Target: < 200 (Good)', 'bg-green-500');
+                                renderKpi('Premium Mix %', '42%', 'vs. 37% PY (Improved)', 'bg-green-500');
+                                renderKpi('Supplier Risk Score', 'Low', 'Severity Index (Good)', 'bg-green-500');
+                                
+                                // 🔗 Supply Chain & Financial Metrics
+                                renderKpi('🔗 Supply Chain & Financial Metrics', '', '', '', true);
+                                renderKpi('OTIF vs. Promise %', '92%', 'Target: 95% (Below Target)', 'bg-red-500');
+                                renderKpi('Inventory Turns', '4.5x', 'vs. 4.2x PY (Improved)', 'bg-green-500');
+                                renderKpi('Days Payable Outstanding (DPOs)', '60', 'Target: 65 (Below Target)', 'bg-red-500');
+                                renderKpi('Spend Avoidance/Savings ($)', '$1.2M', 'YTD', 'bg-green-500');
+                                renderKpi('Prior Day Order Intake (units)', '120', 'vs. 110 Avg (Above Avg)', 'bg-green-500');
+                                renderKpi('Current Month Backlog (units)', '450', 'vs. +1 Mth: 700', 'bg-red-500');
+                                renderKpi('MTD Shipments Pacing vs. Forecast', '98%', 'Target: 100% (Slightly Below)', 'bg-red-500');
+                                renderKpi('Current OH Inventory ($)', '$120M', 'vs. $118M PY (Increased)', 'bg-red-500');
+                                renderKpi('Out of Stock %', '1.5%', 'Target: < 1.0% (Above Target)', 'bg-red-500');
+
+                                
+                            </script>
+                        </div>
+                        
+                        <div class="lg:col-span-1 space-y-4 pt-4 md:pt-10">
+                            
+                            <div class="chart-visual-container">
+                                <h3 class="text-sm font-semibold text-primary-blue mb-1">Inventory Turns Trend (Line Chart)</h3>
+                                <svg id="inventory-line-chart" class="w-full flex-grow"></svg>
+                            </div>
+
+                            <div class="chart-visual-container">
+                                <h3 class="text-sm font-semibold text-primary-blue mb-1">OTIF Performance Trend (Bar Chart)</h3>
+                                <svg id="otif-bar-chart" class="w-full flex-grow"></svg>
+                            </div>
+
+                            <div class="chart-visual-container">
+                                <h3 class="text-sm font-semibold text-primary-blue mb-1">Quality Incident Breakdown (Donut Chart)</h3>
+                                <svg id="quality-donut-chart" class="w-full flex-grow"></svg>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <script>
+                    
+                    // Helper function to get dimensions
+                    function getChartDimensions(id) {
+                        const container = d3.select(id).node().parentNode;
+                        const containerWidth = container.offsetWidth;
+                        const containerHeight = container.offsetHeight - 30; // 30px for the title/padding
+                        const margin = { top: 10, right: 10, bottom: 20, left: 35 };
+                        const width = containerWidth - margin.left - margin.right;
+                        const height = containerHeight - margin.top - margin.bottom;
+                        return { svg: d3.select(id), width, height, margin, containerWidth, containerHeight };
+                    }
+                    
+                    // --- 1. LINE CHART: Inventory Turns Trend ---
+                    function drawLineChart() {
+                        const data = [
+                            { quarter: 'Q1', value: 4.0 },
+                            { quarter: 'Q2', value: 4.2 },
+                            { quarter: 'Q3', value: 4.5 },
+                            { quarter: 'Q4', value: 4.3 }
+                        ];
+                        
+                        const { svg, width, height, margin } = getChartDimensions("#inventory-line-chart");
+                        svg.selectAll("*").remove(); // Clear previous chart
+
+                        const g = svg.append("g")
+                            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+                        // 1. Scales
+                        const x = d3.scaleBand()
+                            .domain(data.map(d => d.quarter))
+                            .range([0, width])
+                            .padding(1);
+
+                        const y = d3.scaleLinear()
+                            .domain([d3.min(data, d => d.value) - 0.5, d3.max(data, d => d.value) + 0.5])
+                            .range([height, 0]);
+
+                        // 2. Axes
+                        g.append("g")
+                            .attr("transform", `translate(0,${height})`)
+                            .call(d3.axisBottom(x).tickSizeOuter(0))
+                            .attr("class", "axis text-[10px]");
+
+                        g.append("g")
+                            .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".1f")))
+                            .attr("class", "axis text-[10px]");
+
+                        // 3. Line Generator
+                        const line = d3.line()
+                            .x(d => x(d.quarter))
+                            .y(d => y(d.value))
+                            .curve(d3.curveMonotoneX);
+
+                        // 4. Draw Line
+                        g.append("path")
+                            .datum(data)
+                            .attr("fill", "none")
+                            .attr("stroke", "#FBBF24") // Accent Yellow
+                            .attr("stroke-width", 2)
+                            .attr("d", line);
+
+                        // 5. Add Dots
+                        g.selectAll(".dot")
+                            .data(data)
+                            .enter().append("circle")
+                            .attr("class", "dot")
+                            .attr("cx", d => x(d.quarter))
+                            .attr("cy", d => y(d.value))
+                            .attr("r", 4)
+                            .attr("fill", "#003366");
+                    }
+                    
+                    // --- 2. BAR CHART: OTIF Performance Trend ---
+                    function drawBarChart() {
+                        const data = [
+                            { month: 'Jul', percent: 93 },
+                            { month: 'Aug', percent: 95 },
+                            { month: 'Sep', percent: 92 },
+                            { month: 'Oct', percent: 90 }
+                        ];
+
+                        const { svg, width, height, margin } = getChartDimensions("#otif-bar-chart");
+                        svg.selectAll("*").remove(); 
+
+                        const g = svg.append("g")
+                            .attr("transform", `translate(${margin.left},${margin.top})`);
+                            
+                        // 1. Scales
+                        const x = d3.scaleBand()
+                            .domain(data.map(d => d.month))
+                            .range([0, width])
+                            .padding(0.2);
+
+                        const y = d3.scaleLinear()
+                            .domain([85, 100]) // Focused Y-axis for better visibility of changes
+                            .range([height, 0]);
+
+                        // 2. Axes
+                        g.append("g")
+                            .attr("transform", `translate(0,${height})`)
+                            .call(d3.axisBottom(x).tickSizeOuter(0))
+                            .attr("class", "axis text-[10px]");
+
+                        g.append("g")
+                            .call(d3.axisLeft(y).ticks(4).tickFormat(d => d + "%"))
+                            .attr("class", "axis text-[10px]");
+
+                        // 3. Draw Bars
+                        g.selectAll(".bar")
+                            .data(data)
+                            .enter().append("rect")
+                            .attr("class", "bar")
+                            .attr("x", d => x(d.month))
+                            .attr("y", d => y(d.percent))
+                            .attr("width", x.bandwidth())
+                            .attr("height", d => height - y(d.percent))
+                            .attr("fill", d => d.percent < 95 ? "#DC2626" : "#10B981"); // Red for below target (95%), Green for target
+                    }
+
+                    // --- 3. DONUT CHART: Quality Incident Breakdown ---
+                    function drawDonutChart() {
+                        const data = [
+                            { type: 'Manufacturing', value: 65 },
+                            { type: 'Shipping', value: 25 },
+                            { type: 'Supplier', value: 10 }
+                        ];
+                        
+                        const { svg, containerWidth, containerHeight } = getChartDimensions("#quality-donut-chart");
+                        svg.selectAll("*").remove(); 
+
+                        const radius = Math.min(containerWidth, containerHeight - 30) / 2 * 0.8;
+                        const outerRadius = radius;
+                        const innerRadius = radius * 0.6; // For the donut hole
+
+                        const g = svg.append("g")
+                            .attr("transform", `translate(${containerWidth / 2}, ${(containerHeight - 30) / 2 + 10})`); // Center it
+
+                        // 1. Color Scale
+                        const color = d3.scaleOrdinal()
+                            .domain(data.map(d => d.type))
+                            .range(["#003366", "#FBBF24", "#6B7280"]); // Primary Blue, Accent Yellow, Gray
+
+                        // 2. Pie Generator
+                        const pie = d3.pie()
+                            .sort(null)
+                            .value(d => d.value);
+
+                        // 3. Arc Generator
+                        const arc = d3.arc()
+                            .innerRadius(innerRadius)
+                            .outerRadius(outerRadius);
+
+                        // 4. Draw Arcs (Paths)
+                        const arcs = g.selectAll(".arc")
+                            .data(pie(data))
+                            .enter().append("g")
+                            .attr("class", "arc");
+
+                        arcs.append("path")
+                            .attr("d", arc)
+                            .attr("fill", d => color(d.data.type));
+
+                        // 5. Add Labels (Inside/Outside the chart)
+                        arcs.append("text")
+                            .attr("transform", d => `translate(${arc.centroid(d)})`)
+                            .attr("dy", "0.35em")
+                            .attr("text-anchor", "middle")
+                            .style("font-size", "10px")
+                            .style("fill", "white")
+                            .text(d => d.data.value > 10 ? d.data.value + "%" : "");
+
+                        // 6. Add Legend (below the chart)
+                        const legendGroup = svg.append("g")
+                            .attr("transform", `translate(${containerWidth / 2 - 50}, ${containerHeight - 20})`);
+
+                        const legend = legendGroup.selectAll(".legend")
+                            .data(data)
+                            .enter().append("g")
+                            .attr("class", "legend")
+                            .attr("transform", (d, i) => `translate(${(i % 2) * 100}, ${Math.floor(i / 2) * 15})`);
+
+                        legend.append("rect")
+                            .attr("x", 0)
+                            .attr("y", 0)
+                            .attr("width", 8)
+                            .attr("height", 8)
+                            .attr("fill", d => color(d.type));
+
+                        legend.append("text")
+                            .attr("x", 12)
+                            .attr("y", 7)
+                            .style("font-size", "10px")
+                            .text(d => d.type);
+                    }
+
+
+                    // Draw all charts once the DOM is loaded
+                    window.onload = function() {
+                        drawLineChart();
+                        drawBarChart();
+                        drawDonutChart();
+                    };
+
+                    // Re-draw on resize
+                    window.addEventListener('resize', function() {
+                        drawLineChart();
+                        drawBarChart();
+                        drawDonutChart();
+                    });
+
+                </script>
+
+            </div>
+        </div>
+
+        <footer class="bg-primary-blue text-white p-4 text-center text-sm">
+            Functional Summary Metrics as of Quarterly 2025
+        </footer>
+    </div>
+</body>
+</html>

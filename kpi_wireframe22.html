@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functional View Dashboard</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        // 2. Load the Visualization API and the corechart package.
+        google.charts.load('current', {'packages':['geochart']});
+
+        // 3. Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawRegionsMap);
+
+        function drawRegionsMap() {
+            // Simulated Sales Data by State (replace with your actual data source)
+            var data = google.visualization.arrayToDataTable([
+                ['State', 'Sales ($M)'],
+                ['US-CA', 95.2], // California - High Sales
+                ['US-TX', 78.5], // Texas - High Sales
+                ['US-NY', 45.1], // New York - Medium Sales
+                ['US-FL', 38.0], // Florida - Medium Sales
+                ['US-IL', 22.0], // Illinois - Lower Sales
+                ['US-MT', 1.5]   // Montana - Low Sales
+                // Add more states as needed (use the 'US-XX' format)
+            ]);
+
+            var options = {
+                region: 'US', // Focus on the US
+                displayMode: 'regions', // Display states/regions
+                resolution: 'provinces', // Use states/provinces resolution
+                width: '100%', // Adjust width to fit container
+                height: 350, // Set a fixed height for the map
+                // Choropleth color settings
+                colorAxis: {
+                    colors: ['#e0e7ed', '#003366'], // Light to Dark Blue (for sales density)
+                    minValue: 0,
+                    maxValue: 100 // Scale based on max expected sales ($M)
+                },
+                // Hide the GeoChart tooltip for a cleaner look
+                enableRegionInteractivity: true,
+                tooltip: {trigger: 'hover'} 
+            };
+
+            var chart = new google.visualization.GeoChart(document.getElementById('us_sales_map'));
+
+            chart.draw(data, options);
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            /* WIDENED: Increased width from 980px to 1100px */
+            width: 1100px;
+            margin: auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px; /* Added rounded corners */
+            overflow: hidden;
+        }
+        /* ... (Keep existing CSS styles from the original document) ... */
+        .dashboard-title {
+            padding: 15px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            background-color: #e0e7ed;
+            color: #003366;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .filters {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+        }
+        .filters label {
+            font-weight: 600;
+            color: #333;
+        }
+        .filters select {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+        .main-content {
+            display: flex;
+            padding: 20px;
+        }
+        .sidebar {
+            width: 50px;
+            text-align: center;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            background-color: #f0f5f8;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #003366;
+            text-orientation: mixed;
+            flex-shrink: 0;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column; /* Changed to column to stack KPI grid and map */
+            gap: 20px;
+        }
+        .results-section {
+            flex: 2; /* Increased size for KPI grid */
+        }
+        .highlights-section {
+            flex: 1.2; /* Adjusted size for charts */
+        }
+        .section-header {
+            background-color: #003366;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px; /* Added space below grid */
+        }
+        .grid-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .kpi-content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .kpi-text-group {
+            text-align: left;
+            flex-grow: 1;
+        }
+        .grid-item-label {
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            width: 100%;
+            text-align: left;
+        }
+        .grid-item-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 2px;
+        }
+        .grid-item-change {
+            font-size: 11px;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+        .grid-item-change.negative {
+            color: #D32F2F;
+        }
+
+        /* Trendline for KPIs */
+        .trendline {
+            display: flex;
+            height: 35px;
+            width: 50px;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .trendline-bar {
+            width: 8px;
+            background-color: #008080;
+            border-radius: 2px 2px 0 0;
+            margin: 0 1px;
+            transition: height 0.3s;
+        }
+        .tl-h-25 { height: 9px; }
+        .tl-h-50 { height: 18px; }
+        .tl-h-75 { height: 27px; }
+        .tl-h-100 { height: 35px; }
+
+
+        /* Chart Section Styles */
+        .chart-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: left;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+        .chart-svg {
+            width: 100%;
+            height: 180px;
+        }
+
+        /* SVG Chart Styles (kept for your existing charts) */
+        .axis-line {
+            stroke: #ccc;
+            stroke-width: 1;
+        }
+        .line-chart-path {
+            fill: none;
+            stroke: #4CAF50; /* Green */
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .bar-chart-bar {
+            fill: #0077b6; /* Blue */
+            transition: fill 0.3s;
+        }
+        .bar-chart-bar:hover {
+            fill: #005f96;
+        }
+        .svg-text {
+            font-size: 10px;
+            fill: #555;
+            pointer-events: none;
+        }
+        
+        /* New styles for the map container */
+        .map-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+
+        .footer {
+            background-color: #003366;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard-title">
+            <span>Functional View</span>
+            <div class="filters">
+                <label for="timeframe-filter">Timeframe:</label>
+                <select id="timeframe-filter">
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly" selected>Quarterly</option>
+                    <option value="Annually">Annually</option>
+                </select>
+                <label for="business-area-filter">Business Area:</label>
+                <select id="business-area-filter">
+                    <option value="All" selected>All</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Industrial">Industrial</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">KEY PERFORMANCE INDICATORS</div>
+            <div class="content-area">
+                <div class="results-section">
+                    <div class="section-header">Q3 FY2025 Financial and Operational Metrics</div>
+
+                    <div class="kpi-grid">
+                        <div class="grid-item">
+                            <div class="grid-item-label">UNITS SOLD</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">2,467</div>
+                                    <div class="grid-item-change">+316 vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">NET SALES</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$398M</div>
+                                    <div class="grid-item-change">+65M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Market Share %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">18.5%</div>
+                                    <div class="grid-item-change">+1.2 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-item">
+                            <div class="grid-item-label">Adjusted EBITDA</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$58M</div>
+                                    <div class="grid-item-change">+10M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Adjusted FCF</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$52M</div>
+                                    <div class="grid-item-change">+56M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">FCF Conversion %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">91%</div>
+                                    <div class="grid-item-change">+45 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-item">
+                            <div class="grid-item-label">OI ($)</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$45M</div>
+                                    <div class="grid-item-change">+8M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">COGS %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">75%</div>
+                                    <div class="grid-item-change negative">-2 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-100" style="background-color: #D32F2F;"></div>
+                                    <div class="trendline-bar tl-h-75" style="background-color: #D32F2F;"></div>
+                                    <div class="trendline-bar tl-h-50" style="background-color: #D32F2F;"></div>
+                                    <div class="trendline-bar tl-h-25" style="background-color: #D32F2F;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">Premium Mix %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">42%</div>
+                                    <div class="grid-item-change">+5 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="map-container">
+                        <div class="chart-title">US Sales Performance by State ($M)</div>
+                        <div id="us_sales_map" style="width: 100%; height: 350px;"></div>
+                        </div>
+                </div>
+
+                <div class="highlights-section">
+                    <div class="section-header">BUSINESS INSIGHTS & TRENDS</div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">Quarterly Revenue Trend ($M)</div>
+                        <svg class="chart-svg" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet">
+                            <line class="axis-line" x1="20" y1="160" x2="280" y2="160" />
+                            <line class="axis-line" x1="20" y1="20" x2="20" y2="160" />
+
+                            <polyline class="line-chart-path" points="
+                                20,116.8
+                                110,95.1
+                                200,43.2
+                                290,20
+                            " />
+                            
+                            <circle cx="20" cy="116.8" r="4" fill="#4CAF50" />
+                            <circle cx="110" cy="95.1" r="4" fill="#4CAF50" />
+                            <circle cx="200" cy="43.2" r="4" fill="#4CAF50" />
+                            <circle cx="290" cy="20" r="4" fill="#4CAF50" />
+
+                            <text class="svg-text" x="20" y="175" text-anchor="middle">Q4'24</text>
+                            <text class="svg-text" x="110" y="175" text-anchor="middle">Q1'25</text>
+                            <text class="svg-text" x="200" y="175" text-anchor="middle">Q2'25</text>
+                            <text class="svg-text" x="290" y="175" text-anchor="middle">Q3'25</text>
+
+                            <text class="svg-text" x="15" y="160" text-anchor="end">0</text>
+                            <text class="svg-text" x="15" y="25" text-anchor="end">410</text>
+                            
+                        </svg>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">Units Sold by Business Area (Q3)</div>
+                        <svg class="chart-svg" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet">
+                            <line class="axis-line" x1="20" y1="160" x2="280" y2="160" />
+                            <line class="axis-line" x1="20" y1="20" x2="20" y2="160" />
+
+                            <rect class="bar-chart-bar" x="40" y="20" width="60" height="140" rx="3" ry="3" />
+                            <text class="svg-text" x="70" y="175" text-anchor="middle">Res.</text>
+                            
+                            <rect class="bar-chart-bar" x="130" y="60" width="60" height="100" rx="3" ry="3" />
+                            <text class="svg-text" x="160" y="175" text-anchor="middle">Com.</text>
+
+                            <rect class="bar-chart-bar" x="220" y="110" width="60" height="50" rx="3" ry="3" />
+                            <text class="svg-text" x="250" y="175" text-anchor="middle">Ind.</text>
+
+                            <text class="svg-text" x="15" y="160" text-anchor="end">0</text>
+                            <text class="svg-text" x="15" y="25" text-anchor="end">1.2K</text>
+                        </svg>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            © 2025 Functional View | Data displayed is for internal use only.
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functional View Dashboard</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        // 2. Load the Visualization API and the corechart package.
+        google.charts.load('current', {'packages':['geochart']});
+
+        // 3. Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawRegionsMap);
+
+        function drawRegionsMap() {
+            // Simulated Sales Data by State (replace with your actual data source)
+            var data = google.visualization.arrayToDataTable([
+                ['State', 'Sales ($M)'],
+                ['US-CA', 95.2], 
+                ['US-TX', 78.5], 
+                ['US-NY', 45.1], 
+                ['US-FL', 38.0], 
+                ['US-IL', 22.0], 
+                ['US-MT', 1.5]  
+            ]);
+
+            var options = {
+                region: 'US', 
+                displayMode: 'regions', 
+                resolution: 'provinces', 
+                width: '100%', 
+                height: 120, 
+                colorAxis: {
+                    colors: ['#e0e7ed', '#003366'], 
+                    minValue: 0,
+                    maxValue: 100 
+                },
+                enableRegionInteractivity: true,
+                tooltip: {trigger: 'hover'} 
+            };
+
+            var chart = new google.visualization.GeoChart(document.getElementById('us_sales_map'));
+
+            chart.draw(data, options);
+        }
+    </script>
+    <style>
+        /* General Layout & Typography */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 8px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 1100px;
+            margin: auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            border-radius: 8px; 
+            overflow: hidden;
+        }
+        .dashboard-title {
+            padding: 8px 12px;
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            background-color: #e0e7ed;
+            color: #003366;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .filters {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+        }
+        .filters select {
+            padding: 3px 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+        .main-content {
+            display: flex;
+            padding: 12px;
+        }
+        .sidebar {
+            width: 35px;
+            text-align: center;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            background-color: #f0f5f8;
+            padding: 6px 0;
+            font-weight: bold;
+            font-size: 15px;
+            color: #003366;
+            text-orientation: mixed;
+            flex-shrink: 0;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column; 
+            gap: 8px; /* ADJUSTMENT: Reduced vertical gap 12px -> 8px */
+        }
+        .section-header {
+            background-color: #003366;
+            color: white;
+            padding: 7px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 4px; /* ADJUSTMENT: Reduced bottom margin 8px -> 4px */
+            font-size: 13px;
+            border-radius: 4px;
+        }
+
+        /* KPI Grid Styles */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 8px; /* ADJUSTMENT: Reduced bottom margin 12px -> 8px */
+        }
+        .grid-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .kpi-content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            line-height: 1.1;
+        }
+        .grid-item-label {
+            font-size: 10px;
+            color: #555;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1px;
+            width: 100%;
+            text-align: left;
+        }
+        .grid-item-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #003366;
+        }
+        .grid-item-change {
+            font-size: 9px;
+            color: #4CAF50;
+        }
+        .trendline {
+            display: flex;
+            height: 25px;
+            width: 35px;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .tl-h-25 { height: 6px; background-color: #003366; } 
+        .tl-h-50 { height: 12px; background-color: #003366; } 
+        .tl-h-75 { height: 18px; background-color: #003366; } 
+        .tl-h-100 { height: 25px; background-color: #003366; }
+
+
+        /* Chart and Map Styles */
+        .small-chart-group {
+            display: flex;
+            gap: 8px; /* ADJUSTMENT: Reduced horizontal gap 10px -> 8px */
+            margin-bottom: 8px; /* ADJUSTMENT: Reduced bottom margin 12px -> 8px */
+        }
+        .chart-map-group {
+            display: flex;
+            gap: 8px; /* ADJUSTMENT: Reduced horizontal gap 10px -> 8px */
+            margin-bottom: 8px; /* ADJUSTMENT: Reduced bottom margin 12px -> 8px */
+        }
+        .chart-container, .map-container, .small-chart {
+            /* Common styling for all charts/maps */
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .chart-container, .map-container {
+            /* 1/3 width for bottom group */
+            width: calc(33.33% - 6px); /* Adjusted width due to smaller gap */
+        }
+        .small-chart {
+            /* 1/2 width for top group */
+            width: calc(50% - 4px); /* Adjusted width due to smaller gap */
+        }
+        .chart-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 2px;
+        }
+        .chart-svg {
+            width: 100%;
+            height: 130px; /* Height for bottom row charts */
+        }
+        .small-chart .chart-svg { 
+            height: 120px; /* ADJUSTMENT: Reduced top row chart height 150px -> 120px */
+        }
+
+        .svg-text {
+            font-size: 8px;
+            fill: #555;
+        }
+        /* Trendline color for SVG charts */
+        .line-chart-path { fill: none; stroke: #4CAF50; stroke-width: 2; }
+        .bar-chart-bar { fill: #003366; }
+        .axis-line { stroke: #ccc; stroke-width: 1; }
+        
+        /* Specific colors for the new grouped bar chart */
+        .bar-actual { fill: #003366; }      /* Dark Blue */
+        .bar-prior { fill: #6AA5E2; }       /* Lighter Blue */
+        .bar-planned { fill: #FCAE1E; }     /* Orange/Amber for Plan/Target */
+        .legend-dot { border-radius: 50%; width: 6px; height: 6px; margin-right: 4px; display: inline-block; }
+        .legend-actual { background-color: #003366; }
+        .legend-prior { background-color: #6AA5E2; }
+        .legend-planned { background-color: #FCAE1E; }
+        .legend { display: flex; gap: 8px; font-size: 8px; margin-top: 5px; justify-content: center; }
+        
+        /* STYLE FOR PRIOR QUARTER LINE */
+        .line-chart-prior { 
+            fill: none; 
+            stroke: #FCAE1E; 
+            stroke-width: 2; 
+            stroke-dasharray: 4 2; /* Dashed line for distinction */
+        }
+        
+        .map-container #us_sales_map {
+            height: 120px !important; 
+        }
+
+        .footer {
+            background-color: #003366;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard-title">
+            <span>Functional View</span>
+            <div class="filters">
+                <label for="timeframe-filter">Timeframe:</label>
+                <select id="timeframe-filter">
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly" selected>Quarterly</option>
+                    <option value="Annually">Annually</option>
+                    <option value="Rolling12">Rolling 12</option>
+                    <option value="Rolling18">Rolling 18</option>
+                </select>
+                <label for="company-filter">Company:</label>
+                <select id="company-filter">
+                    <option value="CompanyA" selected>Company A</option>
+                    <option value="CompanyB">Company B</option>
+                </select>
+                <label for="business-area-filter">Business Area:</label>
+                <select id="business-area-filter">
+                    <option value="All" selected>All</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Industrial">Industrial</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">KEY PERFORMANCE INDICATORS</div>
+            <div class="content-area">
+                <div class="results-section">
+                    <div class="section-header">Q3 FY2025 FP&A and Sales Operations Results</div>
+
+                    <div class="kpi-grid">
+                        <div class="grid-item">
+                            <div class="grid-item-label">UNITS SOLD</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">2,467</div>
+                                    <div class="grid-item-change">+316 vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">NET SALES</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">$398M</div>
+                                    <div class="grid-item-change">+65M vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-25"></div>
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-item-label">GROSS PROFIT %</div>
+                            <div class="kpi-content-wrapper">
+                                <div class="kpi-text-group">
+                                    <div class="grid-item-value">25.3%</div> 
+                                    <div class="grid-item-change">+0.8 pts vs. '24</div>
+                                </div>
+                                <div class="trendline">
+                                    <div class="trendline-bar tl-h-50"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                    <div class="trendline-bar tl-h-100"></div>
+                                    <div class="trendline-bar tl-h-75"></div>
+                                </div>
+                            </div>
+                        </div>
+                         
+                    </div>
+                </div>
+
+                <div class="highlights-section">
+                    <div class="section-header">DETAILED VIEWS</div>
+
+                    <div class="small-chart-group">
+                        <div class="small-chart">
+                            <div class="chart-title">Profit Dollars by Business Area ($M)</div>
+                            <div class="legend" style="margin-bottom: 2px;">
+                                <div><span class="legend-dot legend-actual"></span>Current Qtr</div>
+                                <div><span class="legend-dot" style="background-color: #FCAE1E;"></span>Prior Qtr</div>
+                            </div>
+                            <svg class="chart-svg" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid meet">
+                                <line class="axis-line" x1="20" y1="80" x2="280" y2="80" />
+                                <line class="axis-line" x1="20" y1="15" x2="20" y2="80" />
+                                
+                                <rect class="bar-chart-bar" x="40" y="30" width="60" height="50" rx="3" ry="3" />
+                                <text class="svg-text" x="70" y="95" text-anchor="middle">Res.</text>
+                                
+                                <rect class="bar-chart-bar" x="130" y="50" width="60" height="30" rx="3" ry="3" />
+                                <text class="svg-text" x="160" y="95" text-anchor="middle">Com.</text>
+
+                                <rect class="bar-chart-bar" x="220" y="65" width="60" height="15" rx="3" ry="3" />
+                                <text class="svg-text" x="250" y="95" text-anchor="middle">Ind.</text>
+
+                                <polyline class="line-chart-prior" points="70,36 160,36 250,67.5" />
+                                <circle cx="70" cy="36" r="2" fill="#FCAE1E" />
+                                <circle cx="160" cy="36" r="2" fill="#FCAE1E" />
+                                <circle cx="250" cy="67.5" r="2" fill="#FCAE1E" />
+                                
+                                <text class="svg-text" x="15" y="80" text-anchor="end">0</text>
+                                <text class="svg-text" x="15" y="35" text-anchor="end">40</text>
+                            </svg>
+                        </div>
+
+                        <div class="small-chart">
+                            <div class="chart-title">Sales by Shipping Warehouse ($M)</div>
+                            <div class="legend" style="margin-bottom: 2px;">
+                                <div><span class="legend-dot legend-actual"></span>Current Qtr</div>
+                                <div><span class="legend-dot" style="background-color: #FCAE1E;"></span>Prior Qtr</div>
+                            </div>
+                            <svg class="chart-svg" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid meet">
+                                <line class="axis-line" x1="20" y1="80" x2="280" y2="80" />
+                                <line class="axis-line" x1="20" y1="15" x2="20" y2="80" />
+                                
+                                <rect class="bar-chart-bar" x="40" y="15" width="60" height="65" rx="3" ry="3" />
+                                <text class="svg-text" x="70" y="95" text-anchor="middle">WH A</text>
+                                
+                                <rect class="bar-chart-bar" x="130" y="35" width="60" height="45" rx="3" ry="3" />
+                                <text class="svg-text" x="160" y="95" text-anchor="middle">WH B</text>
+
+                                <rect class="bar-chart-bar" x="220" y="55" width="60" height="25" rx="3" ry="3" />
+                                <text class="svg-text" x="250" y="95" text-anchor="middle">WH C</text>
+                                
+                                <polyline class="line-chart-prior" points="70,21.5 160,30 250,58" />
+                                <circle cx="70" cy="21.5" r="2" fill="#FCAE1E" />
+                                <circle cx="160" cy="30" r="2" fill="#FCAE1E" />
+                                <circle cx="250" cy="58" r="2" fill="#FCAE1E" />
+
+                                <text class="svg-text" x="15" y="80" text-anchor="end">0</text>
+                                <text class="svg-text" x="15" y="20" text-anchor="end">180</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="chart-map-group">
+                        <div class="chart-container">
+                            <div class="chart-title">Net Sales: Actual vs Prior vs Plan ($M)</div>
+                            <div class="legend">
+                                <div><span class="legend-dot legend-actual"></span>Actual</div>
+                                <div><span class="legend-dot legend-prior"></span>Prior Year</div>
+                                <div><span class="legend-dot legend-planned"></span>Planned</div>
+                            </div>
+                            <svg class="chart-svg" viewBox="0 0 300 150" preserveAspectRatio="xMidYMid meet"> 
+                                <line class="axis-line" x1="20" y1="130" x2="280" y2="130" />
+                                <line class="axis-line" x1="20" y1="15" x2="20" y2="130" />
+
+                                <rect class="bar-prior" x="25" y="48" width="15" height="82" rx="2" ry="2" />
+                                <rect class="bar-planned" x="40" y="40" width="15" height="90" rx="2" ry="2" />
+                                <rect class="bar-actual" x="55" y="30" width="15" height="100" rx="2" ry="2" />
+                                <text class="svg-text" x="47.5" y="145" text-anchor="middle">Q4'24</text>
+                                
+                                <rect class="bar-prior" x="80" y="35" width="15" height="95" rx="2" ry="2" /> 
+                                <rect class="bar-planned" x="95" y="30" width="15" height="100" rx="2" ry="2" />
+                                <rect class="bar-actual" x="110" y="25" width="15" height="105" rx="2" ry="2" />
+                                <text class="svg-text" x="102.5" y="145" text-anchor="middle">Q1'25</text>
+
+                                <rect class="bar-prior" x="135" y="30" width="15" height="100" rx="2" ry="2" />
+                                <rect class="bar-planned" x="150" y="25" width="15" height="105" rx="2" ry="2" />
+                                <rect class="bar-actual" x="165" y="28" width="15" height="102" rx="2" ry="2" />
+                                <text class="svg-text" x="157.5" y="145" text-anchor="middle">Q2'25</text>
+
+                                <rect class="bar-prior" x="190" y="40" width="15" height="90" rx="2" ry="2" />
+                                <rect class="bar-planned" x="205" y="20" width="15" height="110" rx="2" ry="2" />
+                                <rect class="bar-actual" x="220" y="22" width="15" height="108" rx="2" ry="2" />
+                                <text class="svg-text" x="212.5" y="145" text-anchor="middle">Q3'25</text>
+
+                                <text class="svg-text" x="15" y="130" text-anchor="end">0</text>
+                                <text class="svg-text" x="15" y="25" text-anchor="end">410</text>
+                                
+                            </svg>
+                        </div>
+
+                        <div class="map-container">
+                            <div class="chart-title">US Sales Performance by State ($M)</div>
+                            <div id="us_sales_map" style="width: 100%;"></div> 
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-title">Units Sold by Sales Area (Q3)</div>
+                            <div class="legend" style="margin-bottom: 2px;">
+                                <div><span class="legend-dot legend-actual"></span>Current Qtr</div>
+                                <div><span class="legend-dot" style="background-color: #FCAE1E;"></span>Prior Qtr</div>
+                            </div>
+                            <svg class="chart-svg" viewBox="0 0 300 150" preserveAspectRatio="xMidYMid meet"> 
+                                <line class="axis-line" x1="20" y1="130" x2="280" y2="130" />
+                                <line class="axis-line" x1="20" y1="15" x2="20" y2="130" />
+                                
+                                <rect class="bar-chart-bar" x="35" y="20" width="40" height="110" rx="3" ry="3" />
+                                <text class="svg-text" x="55" y="145" text-anchor="middle">Shingles</text>
+                                
+                                <rect class="bar-chart-bar" x="95" y="65" width="40" height="65" rx="3" ry="3" />
+                                <text class="svg-text" x="115" y="145" text-anchor="middle">Insulations</text>
+
+                                <rect class="bar-chart-bar" x="155" y="80" width="40" height="50" rx="3" ry="3" />
+                                <text class="svg-text" x="175" y="145" text-anchor="middle">Repairs</text>
+                                
+                                <rect class="bar-chart-bar" x="215" y="100" width="40" height="30" rx="3" ry="3" />
+                                <text class="svg-text" x="235" y="145" text-anchor="middle">Replacements</text>
+
+                                <polyline class="line-chart-prior" points="55,30 115,60 175,100 235,100" />
+                                <circle cx="55" cy="30" r="2" fill="#FCAE1E" />
+                                <circle cx="115" cy="60" r="2" fill="#FCAE1E" />
+                                <circle cx="175" cy="100" r="2" fill="#FCAE1E" />
+                                <circle cx="235" cy="100" r="2" fill="#FCAE1E" />
+
+                                <text class="svg-text" x="15" y="130" text-anchor="end">0</text>
+                                <text class="svg-text" x="15" y="25" text-anchor="end">1.2K</text>
+                            </svg>
+                        </div>
+                         
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            © 2025 Functional View | Data displayed is for internal use only.
+        </footer>
+    </div>
+</body>
+</html>
